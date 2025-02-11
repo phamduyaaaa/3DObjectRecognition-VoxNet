@@ -1,4 +1,4 @@
-Nhận diện Đối tượng 3D sử dụng VoxNet trên ModelNet10
+![loss_plot](https://github.com/user-attachments/assets/6e4ace32-a1d6-4e36-98cf-2e8138699812)Nhận diện Đối tượng 3D sử dụng VoxNet trên ModelNet10
 
 📌 Tổng quan
 
@@ -40,3 +40,5 @@ Mỗi danh mục bao gồm các mẫu huấn luyện và kiểm tra ở định 
 ├── test.py         # Script đánh giá
 ├── real_time.py          # real-time
 └── dataset.py        #
+Kết quả:
+![loss_plot](https://github.com/user-attachments/assets/dca3dbe9-45f7-44cd-b2c6-c2ae49d4f928)
