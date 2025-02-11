@@ -21,6 +21,7 @@ Python 3.9.21
 ### 📂 Tập dữ liệu: ModelNet10
 
 #### [ModelNet10](https://www.kaggle.com/datasets/balraj98/modelnet10-princeton-3d-object-dataset) là tập dữ liệu phổ biến được sử dụng trong nghiên cứu nhận dạng đối tượng 3D.
+![image](https://github.com/user-attachments/assets/9af14476-492b-428b-b724-32556914506e)
 #### Tập dữ liệu bao gồm 4890 mô hình 3D (3991-train/908-test).
 #### Tập dữ liệu chứa 10 lớp đối tượng 3D khác nhau với định dạng .off:
 ```
