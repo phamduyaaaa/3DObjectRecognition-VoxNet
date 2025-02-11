@@ -6,6 +6,7 @@
 
 ### 🏗 Cấu trúc Dự án
 ```bash
+Python 3.9.21
 3DObjectRecognition-VoxNet/
 ├── ModelNet10/           # Tập dữ liệu ModelNet10, bạn có thể tải từ kaggle miễn phí 
 ├── dataset.py            # Xử lý và tải dữ liệu
