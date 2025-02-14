@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+torch.manual_seed(42)
 
 class VoxNet(nn.Module):
     def __init__(self, num_classes=10):
@@ -21,6 +22,8 @@ class VoxNet(nn.Module):
     def forward(self, x):
         x = F.relu(self.batchnorm1(self.conv1(x)))  # Conv1 -> ReLU -> BatchNorm
         x = F.relu(self.batchnorm2(self.conv2(x)))  # Conv2 -> ReLU -> BatchNorm
+        #x = F.relu(self.conv1(x))
+        #x = F.relu(self.conv2(x))
         x = self.maxpooling(x)  # MaxPool
         x = self.dropout(x)  # Dropout
         x = torch.flatten(x, start_dim=1)
@@ -28,3 +31,7 @@ class VoxNet(nn.Module):
         x = self.dropout(x)
         x = self.fc2(x)
         return x
+
+# model1 = VoxNet()
+# print(model1.fc1.weight.data.clone())
+# torch.save(model1.state_dict(),"init_weights.pth")
