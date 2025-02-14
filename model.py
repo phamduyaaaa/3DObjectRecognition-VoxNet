@@ -32,6 +32,6 @@ class VoxNet(nn.Module):
         x = self.fc2(x)
         return x
 
-# model1 = VoxNet()
-# print(model1.fc1.weight.data.clone())
-# torch.save(model1.state_dict(),"init_weights.pth")
+model1 = VoxNet()
+print(model1.fc1.weight.data.clone())
+torch.save(model1.state_dict(),"init_weights.pth")
