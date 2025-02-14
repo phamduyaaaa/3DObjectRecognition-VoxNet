@@ -5,14 +5,16 @@ from torch.utils.data import DataLoader
 from model import VoxNet
 from dataset import ModelNetDataset
 from colorama import Fore
+import csv
 import random
 
 # Cấu hình
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-num_epochs = 300 #12h45p
+print(device)
+num_epochs = 100
 batch_size = 16
 learning_rate = 0.001
-colors = [Fore.RED, Fore.GREEN, Fore.YELLOW, Fore.BLUE, Fore.MAGENTA, Fore.CYAN, Fore.WHITE]
+colors = [Fore.GREEN, Fore.YELLOW, Fore.BLUE, Fore.MAGENTA, Fore.CYAN, Fore.WHITE]
 
 # Load dataset
 train_dataset = ModelNetDataset(root="ModelNet10", train=True)
@@ -22,10 +24,19 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 # Model
 model = VoxNet(num_classes=10).to(device)
+model.load_state_dict(torch.load("init_weights.pth", map_location=device))
+print("LOAD INIT_WEIGHT")
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 criterion = nn.CrossEntropyLoss()
-min_loss = 9999999.0
+min_loss = float('inf')
 epoch_save = 0
+
+# Tạo file CSV và ghi tiêu đề
+csv_filename = "training_log.csv"
+with open(csv_filename, mode="w", newline="") as file:
+    writer = csv.writer(file)
+    writer.writerow(["Epoch", "Loss", "Accuracy"])  # Ghi tiêu đề cột
+
 # Training loop
 for epoch in range(num_epochs):
     model.train()
@@ -35,7 +46,6 @@ for epoch in range(num_epochs):
         points, labels = points.to(device), labels.to(device)
 
         optimizer.zero_grad()
-
         outputs = model(points)
         loss = criterion(outputs, labels)
         loss.backward()
@@ -43,11 +53,35 @@ for epoch in range(num_epochs):
 
         running_loss += loss.item()
 
-    print(random.choice(colors)+ f"Epoch [{epoch + 1}/{num_epochs}], Loss: {running_loss / len(train_loader):.4f}")
-    # Lưu model
-    if (running_loss/len(train_loader)) <= min_loss:
-        min_loss = running_loss/len(train_loader)
+    avg_loss = running_loss / len(train_loader)
+
+    # Đánh giá độ chính xác trên tập kiểm tra
+    model.eval()
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        for points, labels in test_loader:
+            points, labels = points.to(device), labels.to(device)
+            outputs = model(points)
+            _, predicted = torch.max(outputs, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+
+    accuracy = 100 * correct / total  # Tính accuracy (%)
+
+    # Ghi log ra console
+    print(random.choice(colors) + f"Epoch [{epoch + 1}/{num_epochs}], Loss: {avg_loss:.4f}, Accuracy: {accuracy:.2f}%")
+
+    # Lưu vào CSV
+    with open(csv_filename, mode="a", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow([epoch + 1, avg_loss, accuracy])
+
+    # Lưu model nếu có improvement
+    if avg_loss <= min_loss:
+        min_loss = avg_loss
         epoch_save = epoch
-        torch.save(model.state_dict(), f"voxnet_model_best.pth")
-        print(f"--> NEW UPDATE! min_loss = {min_loss} <--")
+        torch.save(model.state_dict(), "voxnet_model_best.pth")
+        print(f"--> NEW UPDATE! min_loss = {min_loss:.4f}, Accuracy = {accuracy:.2f}% <--")
+
 print(Fore.RED + f"Model saved. The best is {epoch_save}!")
