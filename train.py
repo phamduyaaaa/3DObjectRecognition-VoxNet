@@ -8,6 +8,12 @@ from colorama import Fore
 import csv
 import random
 
+def set_seed(seed=42):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+
 # Cấu hình
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
@@ -19,6 +25,7 @@ colors = [Fore.GREEN, Fore.YELLOW, Fore.BLUE, Fore.MAGENTA, Fore.CYAN, Fore.WHIT
 # Load dataset
 train_dataset = ModelNetDataset(root="ModelNet10", train=True)
 test_dataset = ModelNetDataset(root="ModelNet10", train=False)
+set_seed(42)
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
@@ -26,7 +33,9 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 model = VoxNet(num_classes=10).to(device)
 state_dict = torch.load("init_weights.pth", map_location=device, weights_only=True)
 model.load_state_dict(state_dict, strict=False)
+print(model)
 print("LOAD INIT_WEIGHT")
+print(model.fc1.weight.data.clone())
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 criterion = nn.CrossEntropyLoss()
 min_loss = float('inf')
@@ -82,7 +91,7 @@ for epoch in range(num_epochs):
     if avg_loss <= min_loss:
         min_loss = avg_loss
         epoch_save = epoch
-        torch.save(model.state_dict(), "voxnet_model_best.pth")
+        torch.save(model.state_dict(), "voxnet_model_best_default.pth")
         print(f"--> NEW UPDATE! min_loss = {min_loss:.4f}, Accuracy = {accuracy:.2f}% <--")
 
 print(Fore.RED + f"Model saved. The best is {epoch_save}!")
