@@ -7,6 +7,7 @@ from dataset import ModelNetDataset
 from colorama import Fore
 import csv
 import random
+import numpy as np
 
 def set_seed(seed=42):
     torch.manual_seed(seed)
