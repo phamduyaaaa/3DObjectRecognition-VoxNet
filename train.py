@@ -24,7 +24,8 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 # Model
 model = VoxNet(num_classes=10).to(device)
-model.load_state_dict(torch.load("init_weights.pth", map_location=device))
+state_dict = torch.load("init_weights.pth", map_location=device, weights_only=True)
+model.load_state_dict(state_dict, strict=False)
 print("LOAD INIT_WEIGHT")
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 criterion = nn.CrossEntropyLoss()
