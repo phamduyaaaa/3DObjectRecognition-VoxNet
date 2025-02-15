@@ -1,7 +1,7 @@
 import torch.nn as nn
 
 class VoxNet(nn.Module):
-    def __init__(self, norm_type="groupnorm"):  # "batchnorm", "groupnorm", "layernorm"
+    def __init__(self, num_classes=10, norm_type="groupnorm"):  # "batchnorm", "groupnorm", "layernorm"
         super(VoxNet, self).__init__()
         self.conv1 = nn.Conv3d(1, 32, kernel_size=5, stride=2)
         self.conv2 = nn.Conv3d(32, 64, kernel_size=3, stride=1)
@@ -20,7 +20,7 @@ class VoxNet(nn.Module):
         self.maxpool = nn.MaxPool3d(kernel_size=2, stride=2)
 
         self.fc1 = nn.Linear(13824, 1024)
-        self.fc2 = nn.Linear(1024, 10)
+        self.fc2 = nn.Linear(1024, num_classes)
 
     def forward(self, x):
         x = self.conv1(x)
