@@ -30,7 +30,7 @@ train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 # Model
-model = VoxNet(num_classes=10).to(device)
+model = VoxNet(num_classes=10, norm_type="groupnorm").to(device)
 state_dict = torch.load("init_weights.pth", map_location=device, weights_only=True)
 model.load_state_dict(state_dict, strict=False)
 print(model)
