@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-torch.manual_seed(42)
 
 class VoxNet(nn.Module):
     def __init__(self, num_classes=10):
